@@ -108,13 +108,13 @@ urlpatterns = [
 
 다른 URL 패턴을 포함할 때마다 항상 include()를 사용해야 합니다. admin.site.urls가 유일한 예외입니다.
 
-## 데이터베이스
+# 데이터베이스
 
-# SQLite database 세팅
+## SQLite database 세팅
 - python manage.py migrate -> 자동으로 테이블 생성
 - DBeaver -> DB 추가 -> db.sqlite -> 내용 확인
 
-# 테이블 생성
+## 테이블 생성
 - polls 앱에 models.py 내용을 입력
 - settings.py에 app 등록
 - python manage.py makemigrations polls -> 설계도 작성
@@ -210,4 +210,71 @@ class Migration(migrations.Migration):
 python manage.py migrate
 ```
 ![alt text](img/image.png)
+
 다음과 같이 생성된 것을 볼 수 있다
+
+## 테이블에 데이터 넣기
+### shell열기
+```
+python manage.py shell
+```
+
+### 값 넣기(create) !!! 꼭 save()를 해줘야 데이터 베이스에 반영이된다.
+```
+# 예시
+>>> from polls.models import Choice, Question
+>>> Question.objects.all()   # 다 선택하기
+<QuerySet []>
+>>> from django.utils import timezone  # timezone import
+>>> q = Question(question_text="What's new?", pub_date=timezone.now())  # 데이터 넣기
+>>> q
+<Question: Question object (None)>
+>>> q.save()
+>>> q.id
+1
+>>> q = Question(question_text="How's the weather?", pub_date=timezone.n
+ow())
+>>> q.save()
+>>> q.id
+2
+```
+결과
+![alt text](img/image1.png)
+
+### read
+```
+>>> Question.objects.all()
+<QuerySet [<Question: Question object (1)>, <Question: Question object (2)>]>
+>>> q.question_text
+"How's the weather?"
+>>> q.pub_date
+datetime.datetime(2024, 3, 28, 5, 43, 54, 75846, tzinfo=datetime.timezone.utc)
+# get, filter 사용하기
+사용법 get은 하나만 filter는 여러개 검색가능
+>>> Question.objects.filter(id=1)
+>>> Question.objects.get(id=1)
+```
+
+- question_text이 What 으로 시작하는거 찾아줘
+```
+>>> Question.objects.filter(question_text__startwith="What") 
+```
+
+- 현재년도와 같은거 찾아줘
+```
+>>> current_year = timezone.now().year
+>>> current_year
+2024
+>>> Question.objects.filter(pub_date__year = current_year)
+```
+
+### update
+```
+#save()를 꼭 해줘야 한다!!! 그래야 데이터베이스에 반영이 됨
+>>> q.question_text
+"What's your favorite singer?"
+>>> q.question_text = "Likelion"
+>>> q.question_text
+'Likelion'
+>>> q.save()
+```

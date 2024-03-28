@@ -26,6 +26,7 @@ python manage.py runserver
 python manage.py startapp polls
 ```
 - 결과 파일
+
 디렉토리에 polls가 생성된다
 ```
 polls/

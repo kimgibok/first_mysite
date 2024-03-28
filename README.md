@@ -209,5 +209,5 @@ class Migration(migrations.Migration):
 ```
 python manage.py migrate
 ```
-![alt text](img/image.png) 
+![alt text](img/image.png)
 다음과 같이 생성된 것을 볼 수 있다

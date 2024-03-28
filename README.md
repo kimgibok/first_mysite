@@ -3,7 +3,7 @@
 - conda create -n dj python=3.10
 - pip install django
 
-# Django 시작
+## Django 시작
 - git repository 만들어서 git clone -> 만들어진 곳 디렉토리로 들어가서 -> django-admin startproject mysite
 
 - 결과
@@ -17,7 +17,7 @@ mysite/
     wsgi.py
 ```
 
-# 개발서버 
+## 개발서버 
 ```
 python manage.py runserver
 ```
@@ -239,6 +239,7 @@ ow())
 2
 ```
 결과
+
 ![alt text](img/image1.png)
 
 ### read

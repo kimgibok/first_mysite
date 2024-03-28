@@ -1,4 +1,7 @@
-# first_mysite
+# 초기설정
+- 가상환경 만들어서 새로 시작하기
+- conda create -n dj python=3.10
+- pip install django
 
 # Django 시작
 - git repository 만들어서 git clone -> 만들어진 곳 디렉토리로 들어가서 -> django-admin startproject mysite
@@ -39,7 +42,7 @@ polls/
     views.py
 ```
 
-# 첫 번째 뷰 작성하기
+## 라우팅 
 - view 작성
 
 “polls/view.py” 파일에 다음과 같은 코드 입력
@@ -105,4 +108,106 @@ urlpatterns = [
 
 다른 URL 패턴을 포함할 때마다 항상 include()를 사용해야 합니다. admin.site.urls가 유일한 예외입니다.
 
-# 데이터베이스
+## 데이터베이스
+
+# SQLite database 세팅
+- python manage.py migrate -> 자동으로 테이블 생성
+- DBeaver -> DB 추가 -> db.sqlite -> 내용 확인
+
+# 테이블 생성
+- polls 앱에 models.py 내용을 입력
+- settings.py에 app 등록
+- python manage.py makemigrations polls -> 설계도 작성
+- python manage.py migrate -> table 생성
+- 생성된 내용 살펴보기
+
+- polls 앱에 models.py 내용을 입력
+```
+# polls/models.py
+from django.db import models
+
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField("date published")
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+```
+
+- settings.py에 app 등록
+```
+'polls.apps.PollsConfig'
+
+#결과
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'polls.apps.PollsConfig',  # settings.py에 app 등록
+]
+```
+
+- python manage.py makemigrations polls -> 설계도 작성
+
+터미널에 다음과 같이 작성
+```
+python manage.py makemigrations polls
+```
+
+결과 (polls/migrations/0001_initial.py)이 생성되고 0001_initial.py에 설계도가 생성됨
+```
+polls/
+    migrations/
+        __init__.py
+        0001_initial.py
+```
+```
+# 0001_initial.py
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Question',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('question_text', models.CharField(max_length=200)),
+                ('pub_date', models.DateTimeField(verbose_name='date published')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Choice',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('choice_text', models.CharField(max_length=200)),
+                ('votes', models.IntegerField(default=0)),
+                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='polls.question')),
+            ],
+        ),
+    ]
+
+```
+
+- python manage.py migrate -> table 생성
+
+터미널에 다음과 같이 입력하면 table이 생성된다.
+```
+python manage.py migrate
+```
+![alt text](img/image.png) 
+다음과 같이 생성된 것을 볼 수 있다

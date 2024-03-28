@@ -121,7 +121,7 @@ urlpatterns = [
 - python manage.py migrate -> table 생성
 - 생성된 내용 살펴보기
 
-- polls 앱에 models.py 내용을 입력
+### polls 앱에 models.py 내용을 입력
 ```
 # polls/models.py
 from django.db import models
@@ -138,7 +138,7 @@ class Choice(models.Model):
     votes = models.IntegerField(default=0)
 ```
 
-- settings.py에 app 등록
+### settings.py에 app 등록
 ```
 'polls.apps.PollsConfig'
 
@@ -154,14 +154,14 @@ INSTALLED_APPS = [
 ]
 ```
 
-- python manage.py makemigrations polls -> 설계도 작성
+### python manage.py makemigrations polls -> 설계도 작성
 
 터미널에 다음과 같이 작성
 ```
 python manage.py makemigrations polls
 ```
 
-결과 (polls/migrations/0001_initial.py)이 생성되고 0001_initial.py에 설계도가 생성됨
+- 결과 (polls/migrations/0001_initial.py)이 생성되고 0001_initial.py에 설계도가 생성됨
 ```
 polls/
     migrations/
@@ -203,7 +203,7 @@ class Migration(migrations.Migration):
 
 ```
 
-- python manage.py migrate -> table 생성
+### python manage.py migrate -> table 생성
 
 터미널에 다음과 같이 입력하면 table이 생성된다.
 ```
@@ -278,4 +278,56 @@ datetime.datetime(2024, 3, 28, 5, 43, 54, 75846, tzinfo=datetime.timezone.utc)
 >>> q.question_text
 'Likelion'
 >>> q.save()
+```
+
+## 매직매소드
+Question.objects를 호출할때 <QuerySet [<Question: Question object (1)>]> 이렇게 호출되는 걸 
+
+매직매소드를 통해 바꿔보도록 예쁘게 호출되도록 해봅시당
+
+polls/models.py에 들어가서 
+```
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField("date published")
+    
+    # 매직매소드
+    def __str__(self):
+        return self.question_text
+    def was_published_recently(self):
+        return self.pub_date >=timezone.now() - datetime.timedelta(days=1)
+    def length_question_text(self):
+        return len(self.question_text)
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.choice_text
+```
+
+이렇게 매직매소드를 추가해주면 <QuerySet [<Question: Question object (1)>]> -> <QuerySet [<Question: What's new?>]>
+```
+>>> from polls.models import Choice, Question
+>>> Question.objects.all()
+<QuerySet [<Question: What's new?>, <Question: How's the weather?>]>
+>>> Question.objects.filter(id=1)
+<QuerySet [<Question: What's new?>]>
+
+```
+
+- 무언가 하나의 쿼리에서 받아오는 기능을 하는 매소드를 쓸때는 get을 써야한다!
+``` 
+>>> q = Question.objects.get(pk=1)
+>>> q
+<Question: What's new?_Question>
+# 최근에 업데이트 됐는지 알아보는 기능
+>>> q.was_published_recently()
+True
+# question_text의 길이를 받아오는 기능
+>>> q.length_question_text()
+11
 ```

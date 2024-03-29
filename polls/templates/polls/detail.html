@@ -1,0 +1,10 @@
+{% if detail %}
+    <ul>
+    {% for choice in detail %}
+        <li>{{ choice.choice_text }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No choices.</p>
+{% endif %}
+

@@ -1,10 +1,58 @@
-{% if detail %}
-    <ul>
-    {% for choice in detail %}
-        <li>{{ choice.choice_text }}</li>
+<form action="{% url 'polls:vote' question.id %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <legend><h1>{{ question.question_text }}</h1></legend>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+        {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" value="Vote">
+    </form>
+
+{% comment %} Question : {{question}} <br>
+관련 Choice 개수 : {{ch_num}}
+<ul>
+    <li>{{content_1}}</li>
+</ul> {% endcomment %}
+
+{% comment %} <h1>사전조회</h1>
+<h2>{{question.pub_date}}</h2>
+<h2>{{question.question_text}}</h2>
+<h2>{{question.id}}</h2>
+<h1>사전조회</h1>
+<h2>{{question.choice_set.all.0.choice_text}}</h2>
+<h2>{{question.choice_set.all.0.votes}}</h2>
+<h2>{{question.choice_set.all.count}}</h2>
+<h2>{{question.choice_set.all}}</h2> {% endcomment %}
+
+{% comment %} 실습문제-filter
+Question : {{question}} <br>
+<ul>
+    <li>1. {{question.choice_set.all.0|lower}}</li>
+    <li>2. {{question.pub_date|date:"Y-m-d"}}</li>
+    <li>3. {{question.choice_set.all.0.choice_text|capfirst}}</li>
+    <li>4. {{question.choice_set.all.count}}</li>
+    <li>5. {{question.question_text|default:"질문이 없습니다"}}</li>
+    <li>6. {{question.choice_set.all.5.votes|filesizeformat}}</li>
+    <li>7. {{question.choice_set.all|join:", "}}</li>
+    <li>8. {{question.choice_set.all.1|truncatechars:4}}</li>
+</ul> {% endcomment %}
+
+{% comment %} <ol>
+    {% for question in question_list %}
+        <li>{{ question.question_text}}</li>
     {% endfor %}
-    </ul>
+</ol>
+
+
+{% if choice %}
+    <ol>
+    {% for choice in choice %}
+        <li>{{ choice.choice_text}} : {{choice.votes}}</li>
+    {% endfor %}
+    </ol>
 {% else %}
     <p>No choices.</p>
-{% endif %}
-
+{% endif %} {% endcomment %}

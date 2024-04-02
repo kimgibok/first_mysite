@@ -336,3 +336,18 @@ True
 # 상속
 ## 매서드 오버라이드
 구조들이 이미 짜져있는 것 - 안의 내용을 맞춰 바꾸는 것?
+
+# reverse() vs reverse_lazy
+- Class 내부에서 변수로 url 반환 값을 선언하고자 할 때에는 reverse_lazy를 사용하고
+- Class 함수 내부, 또는 함수 내부에서 url 값을 선언하고자 할 때에는 reverse를 사용한다
+
+파이썬에서 클래스를 evaluate하는 순서와 관련이 있다.
+
+클래스 변수를 선언하게 되면, 이는 클래스가 포함된 파일 또는 클래스를 import 할 때에도 evaluate 된다
+
+이 때 이 url 관련 변수를 reverse를 통해 선언하게 되면, 쟝고가 실행되면서 코드를 evaluate할 때 해당 값을 setting
+
+쟝고가 reverse, reverse_lazy등을 사용해 url 절대 경로를 찾을 때에는 settings.py를 통해 초기화된 URLConf 설정값을 참고한다.
+
+따라서 만약 import된 클래스 내부의 url 변수를 reverse로 찾는다면, 쟝고가 실행되기 위해 Python으로 작성된 코드를 evaluate 하는 과정에서 url을 찾는 작업을 하게 된다. 이 때는 settings.py가 초기화 되지 않은 상태이므로 url을 찾지 못하는 오류가 발생한다
+참고: https://yuuraa.github.io/djange/reverse_lazy/python/django-reverse-lazy/

@@ -1,18 +1,45 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.http import HttpResponse, Http404 , HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.utils import timezone
 from django.urls import reverse
+from django.views import generic
+from django.db.models import Sum
+
 
 from .models import Question, Choice
 
-# def index(request):
-#     latest_question_list = Question.objects.order_by("-pub_date")[:5]
-#     template = loader.get_template("polls/index.html")
-#     context = {
-#         "likelion": latest_question_list,
-#     }
-#     return HttpResponse(template.render(context, request))
+# IndexView
+class IndexView(generic.ListView):  # generic에서 ListView 상속
+    # [app_name]/[model_name]_list.html
+    template_name = "polls/index.html"
+    context_object_name = "latest_question_list"
+
+    def get_queryset(self): 
+        """Return the last five published questions."""
+        return Question.objects.order_by("-pub_date")[:3]
+        # return Question.objects.annotate(total_votes=Sum('choice__votes')).order_by('-total_votes')[:3]
+        # return Question.objects.annotate(total_votes=Sum('choice__votes')).filter(total_votes=0)
+        # return Question.objects.all()
+    
+    
+# DetailView
+class DetailView(generic.DetailView):  # generic에서 DetailView상속
+    model = Question  # 어떤 질문인지 응답을 해줌 나머지는 상속받음
+    # [app_name]/[model_name]_detail.html
+    # template_name = "polls/detail.html"
+    
+    def get_object(self):
+        question_id = self.kwargs['q_id']
+        question = get_object_or_404(Question, pk=question_id)
+        return question
+
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = "polls/results.html"
 
 
 def index(request):
@@ -22,18 +49,6 @@ def index(request):
     context = {"likelion": latest_question_list, "totalcount":total_question_count}
     return render(request, "polls/index.html", context)
 
-# def detail(request, question_id):
-#     try:
-#         question = Question.objects.get(pk=question_id)
-#     except Question.DoesNotExist:
-#         raise Http404("Question does not exist")
-#     return render(request, "polls/detail.html", {"question": question})
-
-# 연습문제
-# def detail(request, question_id):
-#     question = get_object_or_404(Question, pk=question_id)
-#     choice_list = question.choice_set.all()
-#     return render(request, "polls/detail.html", {"detail": choice_list})
 
 def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)

@@ -7,9 +7,50 @@ from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
 from django.db.models import Sum
+from django.urls import reverse_lazy
 
 
 from .models import Question, Choice
+
+class QuestionDeleteView(generic.edit.DeleteView):
+    model = Question
+    template_name = 'polls/question_confirm_delete.html'
+    success_url = reverse_lazy('polls:index') 
+
+
+class QuestionUpdateView(generic.edit.UpdateView):
+    model = Question
+    fields = ['question_text']
+    template_name = 'polls/question_update_form.html'  # 재사용하거나 적절한 템플릿 지정
+    success_url = reverse_lazy('polls:index')  # 예시 URL, 실제 프로젝트에 맞게 수정 필요
+    
+class ChoiceUpdateView(generic.edit.UpdateView):
+    model = Choice
+    fields = ['choice_text']
+    template_name = 'polls/choice_update_form.html'  # 새로운 템플릿 또는 기존 템플릿 지정
+
+    def get_success_url(self):
+        # 선택지가 업데이트된 후, 선택지가 속한 질문의 상세 페이지로 리다이렉션
+        choice = self.object
+        return reverse('polls:detail', kwargs={'q_id': choice.question.pk})
+
+
+class ChoiceCreateView(generic.edit.CreateView):
+    model = Choice
+    fields = ['choice_text']
+    template_name = 'polls/choice_form.html'
+    def form_valid(self, form):
+        form.instance.question = get_object_or_404(Question, pk=self.kwargs['pk'])
+        return super().form_valid(form)
+    success_url = reverse_lazy('polls:index')
+
+class QuestionCreateView(generic.edit.CreateView):
+    model = Question
+    # fields = ['question_text', 'pub_date'] # pub_date를 자동으로 입력하게 해서
+    fields = ['question_text']
+    template_name = 'polls/question_form.html'
+    success_url = reverse_lazy('polls:index')
+
 
 # IndexView
 class IndexView(generic.ListView):  # generic에서 ListView 상속
@@ -19,7 +60,7 @@ class IndexView(generic.ListView):  # generic에서 ListView 상속
 
     def get_queryset(self): 
         """Return the last five published questions."""
-        return Question.objects.order_by("-pub_date")[:3]
+        return Question.objects.order_by("-pub_date")
         # return Question.objects.annotate(total_votes=Sum('choice__votes')).order_by('-total_votes')[:3]
         # return Question.objects.annotate(total_votes=Sum('choice__votes')).filter(total_votes=0)
         # return Question.objects.all()

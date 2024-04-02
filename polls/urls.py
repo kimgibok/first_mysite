@@ -1,5 +1,6 @@
 # polls 폴더에 urls.py가 없어서 새로 생성
 from django.urls import path
+from .views import QuestionCreateView, ChoiceCreateView, QuestionUpdateView, ChoiceUpdateView, QuestionDeleteView
 
 from . import views
 
@@ -14,4 +15,9 @@ urlpatterns = [
     path("<int:pk>/results/", views.ResultsView.as_view(), name="results"),
     # ex: /polls/5/vote/
     path("<int:question_id>/vote/", views.vote, name="vote"),
+    path('question/new/', QuestionCreateView.as_view(), name='question_new'),
+    path('question/<int:pk>/choice/new/', ChoiceCreateView.as_view(), name='question_new'),
+    path('question/<int:pk>/update/', QuestionUpdateView.as_view(), name='question_new'),
+    path('choice/<int:pk>/update/', ChoiceUpdateView.as_view(), name='choice_update'),
+    path('question/<int:pk>/delete/', QuestionDeleteView.as_view(), name='question_delete'),
 ]

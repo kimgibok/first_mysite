@@ -128,3 +128,24 @@ class QuestionDetailViewTests(TestCase):
         url = reverse("polls:detail", args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+        
+        
+# result view
+def create_question_without_choices(question_text, days):
+    """
+    Create a question without choices, published the given number of `days`
+    offset to now (negative for questions published in the past, positive for
+    future questions).
+    """
+    time = timezone.now() + datetime.timedelta(days=days)
+    return Question.objects.create(question_text=question_text, pub_date=time)
+
+class QuestionResultsViewTests(TestCase):
+    def test_question_without_choices(self):
+        """
+        The results view of a question without choices should not be displayed.
+        """
+        question = create_question_without_choices("No choices question", days=-1)
+        url = reverse('polls:results', args=(question.id,))  # id를 담아서 results로
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)

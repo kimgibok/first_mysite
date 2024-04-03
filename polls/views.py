@@ -63,7 +63,7 @@ class IndexView(generic.ListView):  # generic에서 ListView 상속
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:4]
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
 
     # def get_queryset(self): 
     #     return Question.objects.order_by("-pub_date")
@@ -93,6 +93,12 @@ class DetailView(generic.DetailView):  # generic에서 DetailView상속
 class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
+    def get_object(self):
+        # question의 choice가 없으면 페이지 나타내지 않는다.
+        question = get_object_or_404(Question, pk=self.kwargs.get('pk'))
+        if not question.choice_set.exists():
+            raise Http404("No choices found for this question.")
+        return question
 
 
 def index(request):

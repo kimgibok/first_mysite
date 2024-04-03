@@ -5,7 +5,8 @@ import datetime
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField(auto_now_add=True) # 알아서 입력되게
+    # pub_date = models.DateTimeField(auto_now_add=True) # 알아서 입력되게
+    pub_date = models.DateTimeField("pub date") 
     
     # 매직매소드
     def __str__(self):

@@ -351,3 +351,15 @@ True
 
 따라서 만약 import된 클래스 내부의 url 변수를 reverse로 찾는다면, 쟝고가 실행되기 위해 Python으로 작성된 코드를 evaluate 하는 과정에서 url을 찾는 작업을 하게 된다. 이 때는 settings.py가 초기화 되지 않은 상태이므로 url을 찾지 못하는 오류가 발생한다
 참고: https://yuuraa.github.io/djange/reverse_lazy/python/django-reverse-lazy/
+
+
+
+# test
+## view에서 처리
+- response.status_code 
+<br>2XX: ok 
+<br>3XX: redirect->그 주소로 바로 접속하지 않고 다른 주소로, ex) A주소 <=> B주소
+<br>4XX: 4용자가 잘못
+<br>5XX: 서5버가 잘못
+
+- 참고: selenium으로도 웹테스트가 가능하다 

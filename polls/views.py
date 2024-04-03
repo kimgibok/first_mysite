@@ -57,13 +57,19 @@ class IndexView(generic.ListView):  # generic에서 ListView 상속
     # [app_name]/[model_name]_list.html
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
+    
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:4]
 
-    def get_queryset(self): 
-        """Return the last five published questions."""
-        return Question.objects.order_by("-pub_date")
-        # return Question.objects.annotate(total_votes=Sum('choice__votes')).order_by('-total_votes')[:3]
-        # return Question.objects.annotate(total_votes=Sum('choice__votes')).filter(total_votes=0)
-        # return Question.objects.all()
+    # def get_queryset(self): 
+    #     return Question.objects.order_by("-pub_date")
+    #     # return Question.objects.annotate(total_votes=Sum('choice__votes')).order_by('-total_votes')[:3]
+    #     # return Question.objects.annotate(total_votes=Sum('choice__votes')).filter(total_votes=0)
+    #     # return Question.objects.all()
     
     
 # DetailView
@@ -71,11 +77,17 @@ class DetailView(generic.DetailView):  # generic에서 DetailView상속
     model = Question  # 어떤 질문인지 응답을 해줌 나머지는 상속받음
     # [app_name]/[model_name]_detail.html
     # template_name = "polls/detail.html"
+    def get_queryset(self):
+        """
+        Excludes any questions that aren't published yet.
+        """
+        return Question.objects.filter(pub_date__lte=timezone.now())
     
-    def get_object(self):
-        question_id = self.kwargs['q_id']
-        question = get_object_or_404(Question, pk=question_id)
-        return question
+    # def get_object(self):
+    #     question_id = self.kwargs['pk']
+    #     question = get_object_or_404(Question, pk=question_id)
+    #     return question
+    
 
 
 class ResultsView(generic.DetailView):

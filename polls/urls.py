@@ -10,7 +10,7 @@ urlpatterns = [
     # ex: /polls/
     path("", views.IndexView.as_view(), name="index"),  # as_view()를 써줘야 화면에 렌더링이 됨
     # ex: /polls/5/
-    path("<int:q_id>/", views.DetailView.as_view(), name="detail"),  # <int:pk> generic은 이미 구조가 짜여저있기 때문에 pk로 설정해 주어야 한다. question_id이런거 못 알아들음
+    path("<int:pk>/", views.DetailView.as_view(), name="detail"),  # <int:pk> generic은 이미 구조가 짜여저있기 때문에 pk로 설정해 주어야 한다. question_id이런거 못 알아들음
     # ex: /polls/5/results/
     path("<int:pk>/results/", views.ResultsView.as_view(), name="results"),
     # ex: /polls/5/vote/
